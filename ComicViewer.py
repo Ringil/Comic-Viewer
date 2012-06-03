@@ -24,11 +24,13 @@ for file in z.namelist():
     bytes = z.read(file)
     z.extract(file)
 
+    '''Extract the files. Make the folder hidden (by putting a . infront of it).
+    Concat the folder name with the next name in namelist and send it to Image.open'''
     img = Image.open(file) #problem here
     
     canvas = Canvas(root, height=img.size[1]+20, width=img.size[0]+20)
     canvas.pack(side=LEFT,fill=BOTH,expand=1)
-    photo = ImageTk.PhotoImage(img)
+    photo = ImageTk.PhotoImage("Batman and Robin 09 (2012) (Minutemen-DosHalos)/"+img)
     item = canvas.create_image(10,10,anchor=NW, image=photo)
     mainloop()
 
