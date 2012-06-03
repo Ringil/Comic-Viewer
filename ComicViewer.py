@@ -22,13 +22,13 @@ z = zipfile.ZipFile(sys.argv[1], "r")
 for file in z.namelist():
     print file
     bytes = z.read(file)
-    print "blah"
-    img = Image.open(bytes) #problem here
-    print "blah2" 
+    z.extract(file)
+
+    img = Image.open(file) #problem here
     
     canvas = Canvas(root, height=img.size[1]+20, width=img.size[0]+20)
     canvas.pack(side=LEFT,fill=BOTH,expand=1)
-    photo = ImageTk.PhotoImage(im)
+    photo = ImageTk.PhotoImage(img)
     item = canvas.create_image(10,10,anchor=NW, image=photo)
     mainloop()
 
