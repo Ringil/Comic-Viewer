@@ -12,7 +12,7 @@ try:
         raise ValueError, "No image filename specified"
 except Exception, e:
     print >>sys.stderr, e
-    print "USAGE: ComicViewer <image filename>"
+    print "USAGE: ./ComicViewer.py <comic filename>"
     sys.exit(1)
     
 root = Tk()
@@ -21,9 +21,10 @@ z = zipfile.ZipFile(sys.argv[1], "r")
 
 for file in z.namelist():
     print file
-    
-    bytes = z.read(z.open(file))
-    img = Image.open(bytes) 
+    bytes = z.read(file)
+    print "blah"
+    img = Image.open(bytes) #problem here
+    print "blah2" 
     
     canvas = Canvas(root, height=img.size[1]+20, width=img.size[0]+20)
     canvas.pack(side=LEFT,fill=BOTH,expand=1)
