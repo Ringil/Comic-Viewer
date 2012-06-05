@@ -16,6 +16,10 @@ except Exception, e:
 root = Tk()
 file = sys.argv[1]
 
+'''
+Possibly use frombuffer or fromstring to deal with what you get back from zipfile. 
+seen at http://www.pythonware.com/library/pil/handbook/image.htm
+'''
 img = Image.open(file) #problem here
     
 canvas = Canvas(root, height=img.size[1]+20, width=img.size[0]+20)
