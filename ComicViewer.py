@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from Tkinter import *
-import Image            #PIL
-import ImageTk          #PIL
+from PIL import Image, ImageTk
 import sys
 import getopt
 import zipfile
@@ -14,23 +13,22 @@ except Exception, e:
     print >>sys.stderr, e
     print "USAGE: ./ComicViewer.py <comic filename>"
     sys.exit(1)
-    
+
 root = Tk()
-    
-z = zipfile.ZipFile(sys.argv[1], "r")
 
-for file in z.namelist():
-    print file
-    bytes = z.read(file)
-    z.extract(file)
+c = Canvas(root)
+c.pack()
 
-    img = Image.open(file) #problem here
-    
-    canvas = Canvas(root, height=img.size[1]+20, width=img.size[0]+20)
-    canvas.pack(side=LEFT,fill=BOTH,expand=1)
-    photo = ImageTk.PhotoImage(img)
-    item = canvas.create_image(10,10,anchor=NW, image=photo)
-    mainloop()
+z = zipfile.ZipFile("axe.cbz", "r")
+
+t = z.read(z.namelist()[0])
+
+img=base64.encodestring(t)
+pimg=PhotoImage(img)
+
+c.create_image(100, 100, image=pimg)
+
+root.mainloop()
 
     
 
