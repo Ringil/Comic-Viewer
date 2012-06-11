@@ -19,13 +19,13 @@ z = zipfile.ZipFile(file, "r")
 data = z.read(z.namelist()[0])                          #Read in the image data
 dataEnc=StringIO(data)                                  #Encode the raw data to be used by Image.open()
 
+root = Tk()
+
 ####jpegs display in the tk window but gif doesnt####
 img = Image.open(dataEnc)                               #Open the image
 pimg= ImageTk.PhotoImage(img)                           #Make tk compatible image
 #img.show()                                              #shows image in preview
 #################
-
-root = Tk()
 
 '''
 This has to change. Connect image to frame then add scrollbar
