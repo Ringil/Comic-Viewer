@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from Tkinter import *
+from StringIO import StringIO
 from PIL import Image, ImageTk
 import sys
 import getopt
@@ -17,17 +18,20 @@ except Exception, e:
 root = Tk()
 
 c = Canvas(root)
-c.pack()
+c.pack()                                                #TODO: check what this does
 
-z = zipfile.ZipFile("axe.cbz", "r")
+z = zipfile.ZipFile(sys.argv[1], "r")
 
-t = z.read(z.namelist()[0])
+data = z.read(z.namelist()[0])                          #Read in the image data
+dataEnc=StringIO(data)                                  #Encode the raw data to be used by Image.open()
 
-img=base64.encodestring(t)
-pimg=PhotoImage(img)
+####jpegs display in the tk window but gif doesnt####
+img = Image.open(dataEnc)                               #Open the image
+pimg= ImageTk.PhotoImage(img)                           #Make tk compatible image
+#img.show()                                              #shows image in preview
+#################
 
-c.create_image(100, 100, image=pimg)
-
+c.create_image(img.size[0], img.size[1], image=pimg)    #TODO: check what this does
 root.mainloop()
 
     
