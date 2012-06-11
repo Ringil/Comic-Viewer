@@ -2,8 +2,8 @@
 from Tkinter import *
 from StringIO import StringIO
 from PIL import Image, ImageTk
-import sys
-import getopt
+import sys, getopt, zipfile
+ 
 
 try:
     if len(sys.argv) == 1:
@@ -13,25 +13,8 @@ except Exception, e:
     print "USAGE: ./ComicViewer.py <comic filename>"
     sys.exit(1)
 
-root = Tk()
-<<<<<<< HEAD
 file = sys.argv[1]
-
-'''
-This has to change. Connect image to frame then add scrollbar
-'''
-frame = Frame(root, bd=2, relief=SUNKEN)
-frame.grid_rowconfigure(0, weight=1)
-frame.grid_columnconfigure(0, weight=1)
-
-yscrollbar = Scrollbar(frame) 
-yscrollbar.grid(row=0, column=1, sticky=N+S)
-=======
-
-c = Canvas(root)
-c.pack()                                                #TODO: check what this does
-
-z = zipfile.ZipFile(sys.argv[1], "r")
+z = zipfile.ZipFile(file, "r")
 
 data = z.read(z.namelist()[0])                          #Read in the image data
 dataEnc=StringIO(data)                                  #Encode the raw data to be used by Image.open()
@@ -42,15 +25,17 @@ pimg= ImageTk.PhotoImage(img)                           #Make tk compatible imag
 #img.show()                                              #shows image in preview
 #################
 
-c.create_image(img.size[0], img.size[1], image=pimg)    #TODO: check what this does
-root.mainloop()
->>>>>>> ziplfile
+root = Tk()
 
 '''
-Possibly use frombuffer or fromstring to deal with what you get back from zipfile. 
-seen at http://www.pythonware.com/library/pil/handbook/image.htm
+This has to change. Connect image to frame then add scrollbar
 '''
-img = Image.open(file) #problem here
+frame = Frame(root, bd=2, relief=SUNKEN)
+frame.grid_rowconfigure(0, weight=1)
+frame.grid_columnconfigure(0, weight=1)
+
+yscrollbar = Scrollbar(frame) 
+yscrollbar.grid(row=0, column=1, sticky=N+S)
     
 #canvas = Canvas(root, height=img.size[1]-200, width=img.size[0]+20)
 #canvas = Canvas(frame, height=800, width=img.size[0]+20)
@@ -61,6 +46,5 @@ canvas.config(scrollregion=canvas.bbox(ALL))
 yscrollbar.config(command=canvas.yview)
 
 frame.pack(side=LEFT,fill=BOTH,expand=1)
-photo = ImageTk.PhotoImage(img)
-item = canvas.create_image(10,10,anchor=NW, image=photo)
+item = canvas.create_image(10,10,anchor=NW, image=pimg)
 mainloop()
