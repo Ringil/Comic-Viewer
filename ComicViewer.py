@@ -24,8 +24,6 @@ root = Tk()
 ####jpegs display in the tk window but gif doesnt####
 img = Image.open(dataEnc)                               #Open the image
 pimg= ImageTk.PhotoImage(img)                           #Make tk compatible image
-#img.show()                                              #shows image in preview
-#################
 
 '''
 This has to change. Connect image to frame then add scrollbar
