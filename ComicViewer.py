@@ -1,48 +1,58 @@
-#!/usr/bin/env python
-from Tkinter import *
+#!/usr/bin/python
+
+'''
+Rewritten in Qt4 instead of Tkinter
+Missing functionality:
+
+Scrollbar
+Ability to read through multiple images
+Relative positioning of widgets instead of exact
+'''
+import sys, zipfile, 
+from PyQt4 import QtGui, QtCore
 from StringIO import StringIO
-from PIL import Image, ImageTk
-import sys, getopt, zipfile
- 
 
-try:
-    if len(sys.argv) == 1:
-        raise ValueError, "No image filename specified"
-except Exception, e:
-    print >>sys.stderr, e
-    print "USAGE: ./ComicViewer.py <comic filename>"
-    sys.exit(1)
-
-file = sys.argv[1]
-z = zipfile.ZipFile(file, "r")
-
-data = z.read(z.namelist()[0])                          #Read in the image data
-dataEnc=StringIO(data)                                  #Encode the raw data to be used by Image.open()
-
-root = Tk()
-
-####jpegs display in the tk window but gif doesnt####
-img = Image.open(dataEnc)                               #Open the image
-pimg= ImageTk.PhotoImage(img)                           #Make tk compatible image
-
-'''
-This has to change. Connect image to frame then add scrollbar
-'''
-frame = Frame(root, bd=2, relief=SUNKEN)
-frame.grid_rowconfigure(0, weight=1)
-frame.grid_columnconfigure(0, weight=1)
-
-yscrollbar = Scrollbar(frame) 
-yscrollbar.grid(row=0, column=1, sticky=N+S)
+class ComicViewer(QtGui.QWidget):
     
-#canvas = Canvas(root, height=img.size[1]-200, width=img.size[0]+20)
-#canvas = Canvas(frame, height=800, width=img.size[0]+20)
-canvas = Canvas(frame, height=800, width=img.size[0]+20,bd=0, yscrollcommand=yscrollbar.set)
-canvas.grid(row=0, column=0, sticky=N+S+E+W)
-canvas.config(scrollregion=canvas.bbox(ALL))
+    def __init__(self):
+        super(ComicViewer, self).__init__()
+        
+        self.initUI()
+        
+    def initUI(self):      
 
-yscrollbar.config(command=canvas.yview)
+        hbox = QtGui.QHBoxLayout(self)
+        pixmap = QtGui.QPixmap("axe.gif") #this will have to change
 
-frame.pack(side=LEFT,fill=BOTH,expand=1)
-item = canvas.create_image(10,10,anchor=NW, image=pimg)
-mainloop()
+        lbl = QtGui.QLabel(self)
+        lbl.setPixmap(pixmap)
+
+        hbox.addWidget(lbl)
+        self.setLayout(hbox)
+        
+        self.move(300, 200)
+        self.setWindowTitle('Comic Viewer')
+        self.show() 
+        
+    def readZip(self, inFile):
+    		'''
+    		This actually read and encodes the first file in a zipfile
+    		NEEDS TO CHANGE
+    		'''
+    		z = zipfile.ZipFile(inFile,"r")
+    		data = z.read(z.namelist()[0])
+    		self.dataEnc = StringIO(data)       
+        
+if __name__ == '__main__':
+	try:
+    		if len(sys.argv) == 1:
+        		raise ValueError, "No image filename specified"
+	except Exception, e:
+    		print >>sys.stderr, e
+    		print "USAGE: ./ComicViewer.py <comic filename>"
+    		sys.exit(1)
+    		
+    	inFile = sys.argv[1]	
+	app = QtGui.QApplication(sys.argv)
+	ex = ComicViewer()
+	sys.exit(app.exec_())
