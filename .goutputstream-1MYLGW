@@ -9,7 +9,6 @@ Scrollbar
 Ability to read through multiple images
 Relative positioning of widgets instead of exact
 '''
-
 import sys, zipfile
 from PIL import Image
 from PyQt4 import QtGui, QtCore
@@ -22,44 +21,25 @@ class ComicViewer(QtGui.QWidget):
         self.openFile(inFile)
         self.showImage(self.encodeImg())
         
-    def initUI(self): 
-        myLayout = QtGui.QHBoxLayout()
+    def initUI(self):      
+        hbox = QtGui.QHBoxLayout(self)
         self.lbl = QtGui.QLabel(self)
-        
-        self.setLayout(myLayout)
-        
-        sarea = QtGui.QScrollArea()
-        sarea.setWidgetResizable(True)
-        sarea.setEnabled(True)
-        sarea.setMaximumSize(800, 600)
-        sarea.setWidget(self.lbl)        
-        #self.addWidget(sarea)
-        
-        myLayout.addWidget(self.lbl)
-        
-        self.move(300, 200)
-        self.setWindowTitle('Comic Viewer')
-        '''     
-        self.hbox = QtGui.QHBoxLayout(self)
-        self.lbl = QtGui.QLabel(self)
-        self.setLayout(self.hbox)
         
         self.sbar = QtGui.QScrollArea()
-        self.sbar.setWidgetResizable(True)
-        self.sbar.setEnabled(True)
-        self.sbar.setMaximumSize(800,600)
+        #self.sbar.setBackgroundRole(QPallet.Dark)
         self.sbar.setWidget(self.lbl)
 
-        self.hbox.addWidget(self.lbl)
-        
+        hbox.addWidget(self.lbl)
+        self.setLayout(hbox)
         
         self.move(300, 200)
         self.setWindowTitle('Comic Viewer')
         #self.show() 
-        '''
         
     def showImage(self, imgData):
-        self.lbl.setPixmap(imgData) 
+        self.pixmap = pil2qpixmap(imgData)
+        self.lbl.setPixmap(self.pixmap)
+        
         self.show()
     
     def openFile(self, inFile):
@@ -67,17 +47,22 @@ class ComicViewer(QtGui.QWidget):
         
     def encodeImg(self):
         '''
-        Returns a QPixmap of the first image in an archive
-        '''
+    	    This actually encodes ONLY the first file in a zipfile
+		NEEDS TO CHANGE
+		'''
+        #FIXME: NOT ENCODED THE WAY THAT LOADFROMDATA WANTS IT
+        data = self.z.read(self.z.namelist()[0])
+        enc = StringIO(data) 
+        img = Image.open(enc)
+        return img
         
-        #data = self.z.read(self.z.namelist()[0])
-        #enc = StringIO(data) 
-        img = Image.open("batman_robin_09-p00.jpg")
-        data = img.tostring('raw', 'RGBA')
-        img = QtGui.QImage(data, img.size[0], img.size[1], QtGui.Format_ARGB32)
-        pix = QtGui.QPixmap.fromImage(img)
-    
-        return pix
+def pil2qpixmap(pil_image):
+	w, h = pil_image.size
+	data = pil_image.tostring("raw", "BGRX")
+	qimage = QtGui.QImage(data, w, h, QtGui.QImage.Format_RGB32)
+	qpixmap = QtGui.QPixmap(w,h)
+	pix = QtGui.QPixmap.fromImage(qimage)
+	return pix
         
 if __name__ == '__main__':
     try:
