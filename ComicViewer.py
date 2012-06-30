@@ -5,7 +5,6 @@ Written By: Kyle Robinson
 Rewritten in Qt4 instead of Tkinter
 Missing functionality:
 
-Scrollbar
 Ability to read through multiple images
 Relative positioning of widgets instead of exact
 '''
@@ -37,7 +36,7 @@ class ComicViewer(QtGui.QWidget):
         hbox.addWidget(scrollArea)
         
         self.setLayout(hbox)
-        self.setGeometry(800, 800, 600, 600)
+        self.setGeometry(1280, 1280, 1024, 1024)
         self.move(300, 200)
         self.setWindowTitle('Batman')
         self.show() 
@@ -57,8 +56,8 @@ class ComicViewer(QtGui.QWidget):
         data = self.z.read(self.z.namelist()[0])
         enc = StringIO(data) 
         img = Image.open(enc)
-        data = img.tostring()
-        qimg = QtGui.QImage(data, img.size[0], img.size[1], QtGui.QImage.Format_RGB32)
+        data = img.convert("RGBA").tostring("raw", "BGRA")
+        qimg = QtGui.QImage(data, img.size[0], img.size[1], QtGui.QImage.Format_ARGB32)
         pix = QtGui.QPixmap.fromImage(qimg)
     
         return pix
