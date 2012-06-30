@@ -33,7 +33,7 @@ class ComicViewer(QtGui.QWidget):
         sarea.setEnabled(True)
         sarea.setMaximumSize(800, 600)
         sarea.setWidget(self.lbl)        
-        #self.addWidget(sarea)
+        self.addWidget(sarea)
         
         myLayout.addWidget(self.lbl)
         
@@ -70,12 +70,12 @@ class ComicViewer(QtGui.QWidget):
         Returns a QPixmap of the first image in an archive
         '''
         
-        #data = self.z.read(self.z.namelist()[0])
-        #enc = StringIO(data) 
-        img = Image.open("batman_robin_09-p00.jpg")
-        data = img.tostring('raw', 'RGBA')
-        img = QtGui.QImage(data, img.size[0], img.size[1], QtGui.Format_ARGB32)
-        pix = QtGui.QPixmap.fromImage(img)
+        data = self.z.read(self.z.namelist()[0])
+        enc = StringIO(data) 
+        img = Image.open(enc)
+        data = img.tostring()
+        qimg = QtGui.QImage(data, img.size[0], img.size[1], QtGui.QImage.Format_RGB32)
+        pix = QtGui.QPixmap.fromImage(qimg)
     
         return pix
         
