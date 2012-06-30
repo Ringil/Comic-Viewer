@@ -23,40 +23,24 @@ class ComicViewer(QtGui.QWidget):
         self.showImage(self.encodeImg())
         
     def initUI(self): 
-        myLayout = QtGui.QHBoxLayout()
-        self.lbl = QtGui.QLabel(self)
-        
-        self.setLayout(myLayout)
-        
-        sarea = QtGui.QScrollArea()
-        sarea.setWidgetResizable(True)
-        sarea.setEnabled(True)
-        sarea.setMaximumSize(800, 600)
-        sarea.setWidget(self.lbl)        
-        self.addWidget(sarea)
-        
-        myLayout.addWidget(self.lbl)
-        
-        self.move(300, 200)
-        self.setWindowTitle('Comic Viewer')
-        '''     
-        self.hbox = QtGui.QHBoxLayout(self)
-        self.lbl = QtGui.QLabel(self)
-        self.setLayout(self.hbox)
-        
-        self.sbar = QtGui.QScrollArea()
-        self.sbar.setWidgetResizable(True)
-        self.sbar.setEnabled(True)
-        self.sbar.setMaximumSize(800,600)
-        self.sbar.setWidget(self.lbl)
+        hbox = QtGui.QHBoxLayout(self)
+        pixmap = QtGui.QPixmap()
 
-        self.hbox.addWidget(self.lbl)
+        self.lbl = QtGui.QLabel(self)
+        self.lbl.setPixmap(pixmap)
+
+        scrollArea = QtGui.QScrollArea(self)
+        scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
+        scrollArea.setWidget(self.lbl)
+        scrollArea.setWidgetResizable(True)
         
+        hbox.addWidget(scrollArea)
         
+        self.setLayout(hbox)
+        self.setGeometry(800, 800, 600, 600)
         self.move(300, 200)
-        self.setWindowTitle('Comic Viewer')
-        #self.show() 
-        '''
+        self.setWindowTitle('Batman')
+        self.show() 
         
     def showImage(self, imgData):
         self.lbl.setPixmap(imgData) 
