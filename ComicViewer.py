@@ -11,7 +11,7 @@ from PIL import Image
 from PyQt4 import QtGui, QtCore
 from StringIO import StringIO
 
-class ComicViewer(QtGui.QWidget):
+class ComicViewer(QtGui.QMainWindow):
     def __init__(self, inFile):
         super(ComicViewer, self).__init__()
         self.initUI()
@@ -19,24 +19,43 @@ class ComicViewer(QtGui.QWidget):
         self.showImage(self.encodeImg())
         
     def initUI(self): 
-        hbox = QtGui.QHBoxLayout(self)
         pixmap = QtGui.QPixmap()
 
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
-
+        
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
         scrollArea.setWidget(self.lbl)
         scrollArea.setWidgetResizable(True)
         
-        hbox.addWidget(scrollArea)
+        self.setCentralWidget(self.lbl)
         
-        self.setLayout(hbox)
-        self.setGeometry(800, 800, 600, 600)
+        self.statusBar()
+
+        openFile = QtGui.QAction(QtGui.QIcon('open.png'), 'Open', self)
+        openFile.setShortcut('Ctrl+O')
+        openFile.setStatusTip('Open new File')
+        openFile.triggered.connect(self.showDialog)
+
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(openFile)
+        
+        #self.setGeometry(800, 800, 600, 600)
+        self.setMaximumHeight(300)
         self.move(300, 200)
         self.setWindowTitle('Comic Viewer')
-        self.show() 
+        self.show()
+        
+    def showDialog(self):
+        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file', 
+                '/home')
+        
+        f = open(fname, 'r')
+        
+        with f:        
+            data = f.read() 
         
     def showImage(self, imgData):
         self.lbl.setPixmap(imgData) 
