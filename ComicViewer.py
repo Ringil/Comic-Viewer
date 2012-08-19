@@ -16,7 +16,8 @@ class ComicViewer(QtGui.QMainWindow):
         super(ComicViewer, self).__init__()
         self.initUI()
         
-    def initUI(self): 
+    def initUI(self):
+        self.z = [] 
         pixmap = QtGui.QPixmap()
 
         self.lbl = QtGui.QLabel(self)
@@ -48,13 +49,17 @@ class ComicViewer(QtGui.QMainWindow):
         #FIXME: Find out how to set a specific initial height regardless of pic size
         self.setGeometry(800, 800, 600, 600)
         #self.setMaximumHeight(300)
-        self.move(800, 200)
+        self.move(300, 200)
         self.setWindowTitle('Comic Viewer')
         self.show()
         
     def showDialog(self):
-        inFile = QtGui.QFileDialog.getOpenFileName(self, 'Open file', 
-                '/home')
+        '''
+        FIXME: I think this is causing issues. Compare it to the output of the location
+        when using the master branch copy
+        '''
+        inFile = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '/home') 
+        print "\nFILE LOCATION:" + inFile + "\n"
         
         if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
             self.z = zipfile.ZipFile(inFile, "r")    
