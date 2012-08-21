@@ -48,16 +48,12 @@ class ComicViewer(QtGui.QMainWindow):
         
         #FIXME: Find out how to set a specific initial height regardless of pic size
         self.setGeometry(800, 800, 600, 600)
-        #self.setMaximumHeight(300)
+        self.setMaximumHeight(800)
         self.move(300, 200)
         self.setWindowTitle('Comic Viewer')
         self.show()
         
     def showDialog(self):
-        '''
-        FIXME: I think this is causing issues. Compare it to the output of the location
-        when using the master branch copy
-        '''
         inFile = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', '/home')) 
         #print "\nFILE LOCATION:" + inFile + "\nType:" + type(inFile) + "\n"
         
@@ -73,6 +69,8 @@ class ComicViewer(QtGui.QMainWindow):
         
     def showImage(self, imgData):
         self.lbl.setPixmap(imgData) 
+        self.setGeometry(800, 800, 600, 600)
+        self.setMaximumHeight(800)
         #TODO: Possibly set size of window here before showing
         self.show()
     
@@ -80,7 +78,7 @@ class ComicViewer(QtGui.QMainWindow):
         '''
         Returns a QPixmap of the first image in an archive
         '''
-        data = self.z.read(self.z.namelist()[0])
+        data = self.z.read(self.z.namelist()[0]) #TODO: Need to change this so more than first image is viewable
         enc = StringIO(data) 
         img = Image.open(enc)
         data = img.convert("RGBA").tostring("raw", "BGRA")
