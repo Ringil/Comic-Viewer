@@ -3,10 +3,6 @@
 '''
 Written By: Kyle Robinson
 Comic Viewer
-
-To fix the image rescaling so large try using QPixmap.scaled() with  
-Qt.KeepAspectRatioByExpanding as the aspect mode and then use something
-like a max of 800 for testing purposes for the height
 '''
 
 import sys, zipfile
@@ -76,7 +72,7 @@ class ComicViewer(QtGui.QMainWindow):
         self.setGeometry(800, 800, 600, 600)
         self.setMaximumHeight(800)
         #TODO: Possibly set size of window here before showing
-        #self.show()
+        self.show()
     
     def encodeImg(self):
         '''
