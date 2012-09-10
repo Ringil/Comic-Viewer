@@ -26,7 +26,6 @@ class ComicViewer(QtGui.QMainWindow):
 
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
-        self.lbl.setScaledContents(True)
         
         '''
 		I think this scrollarea is unneeded due to QMainWindow
@@ -74,6 +73,8 @@ class ComicViewer(QtGui.QMainWindow):
         
     def showImage(self, imgData):
         self.lbl.setPixmap(imgData) 
+        self.setGeometry(800, 800, 600, 600)
+        self.setMaximumHeight(800)
         #TODO: Possibly set size of window here before showing
         #self.show()
     
