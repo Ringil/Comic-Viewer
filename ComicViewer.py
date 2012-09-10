@@ -17,7 +17,7 @@ class ComicViewer(QtGui.QMainWindow):
         self.initUI()
         
     def initUI(self):
-        self.z = ""
+        self.z = [] 
         pixmap = QtGui.QPixmap()
 
         self.lbl = QtGui.QLabel(self)
@@ -58,8 +58,8 @@ class ComicViewer(QtGui.QMainWindow):
         FIXME: I think this is causing issues. Compare it to the output of the location
         when using the master branch copy
         '''
-        inFile = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', '/home')) 
-        #print "\nFILE LOCATION:" + inFile + "\nType:" + type(inFile) + "\n"
+        inFile = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '/home') 
+        print "\nFILE LOCATION:" + inFile + "\n"
         
         if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
             self.z = zipfile.ZipFile(inFile, "r")    
