@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 '''
 Written By: Kyle Robinson
@@ -12,9 +12,11 @@ from PyQt4 import QtGui, QtCore
 from StringIO import StringIO
 
 class ComicViewer(QtGui.QMainWindow):
-    def __init__(self):
+    def __init__(self, inFile):
         super(ComicViewer, self).__init__()
         self.initUI()
+        self.openFile(inFile)
+        self.showImage(self.encodeImg())
         
     def initUI(self): 
         pixmap = QtGui.QPixmap()
@@ -22,20 +24,18 @@ class ComicViewer(QtGui.QMainWindow):
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
         
-        '''
+		'''
 		I think this scrollarea is unneeded due to QMainWindow
-        
+		'''
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
         scrollArea.setWidget(self.lbl)
         scrollArea.setWidgetResizable(True)
-        '''
         
         self.setCentralWidget(self.lbl)
         
         self.statusBar()
 
-        #Open File menubar
         openFile = QtGui.QAction(QtGui.QIcon('open.png'), 'Open', self)
         openFile.setShortcut('Ctrl+O')
         openFile.setStatusTip('Open new File')
@@ -45,17 +45,31 @@ class ComicViewer(QtGui.QMainWindow):
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(openFile)
         
-        #FIXME: Find out how to set a specific initial height regardless of pic size
-        self.setGeometry(800, 800, 600, 600)
-        #self.setMaximumHeight(300)
-        self.move(800, 200)
+		#FIXME: Find out how to set a specific initial height regardless of pic size
+        #self.setGeometry(800, 800, 600, 600)
+        self.setMaximumHeight(300)
+        self.move(300, 200)
         self.setWindowTitle('Comic Viewer')
         self.show()
         
     def showDialog(self):
-        inFile = QtGui.QFileDialog.getOpenFileName(self, 'Open file', 
+        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file', 
                 '/home')
+        '''
+		TODO: find out what open returns and hook it up to the
+		current open file system
+		'''
+        f = open(fname, 'r')
         
+        with f:        
+            data = f.read() 
+        
+    def showImage(self, imgData):
+        self.lbl.setPixmap(imgData) 
+		#Possibly set size of window here before showing
+        self.show()
+    
+    def openFile(self, inFile):
         if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
             self.z = zipfile.ZipFile(inFile, "r")    
         elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
@@ -63,14 +77,7 @@ class ComicViewer(QtGui.QMainWindow):
         else:
             print "Unknown Comic Archive Type"
             sys.exit(1)
-            
-        self.showImage(self.encodeImg())
         
-    def showImage(self, imgData):
-        self.lbl.setPixmap(imgData) 
-        #TODO: Possibly set size of window here before showing
-        self.show()
-    
     def encodeImg(self):
         '''
         Returns a QPixmap of the first image in an archive
@@ -84,7 +91,16 @@ class ComicViewer(QtGui.QMainWindow):
     
         return pix
         
-if __name__ == '__main__':	
+if __name__ == '__main__':
+    try:
+        if len(sys.argv) == 1:
+            raise ValueError, "No image filename specified"
+    except Exception, e:
+        print >> sys.stderr, e
+        print "USAGE: ./ComicViewer.py <comic filename>"
+        sys.exit(1)
+            
+    inFile = sys.argv[1]	
     app = QtGui.QApplication(sys.argv)
-    ex = ComicViewer()
+    ex = ComicViewer(inFile)
     sys.exit(app.exec_())
