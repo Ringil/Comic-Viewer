@@ -24,9 +24,6 @@ class ComicViewer(QtGui.QMainWindow):
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
         
-		'''
-		I think this scrollarea is unneeded due to QMainWindow
-		'''
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
         scrollArea.setWidget(self.lbl)
@@ -45,7 +42,6 @@ class ComicViewer(QtGui.QMainWindow):
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(openFile)
         
-		#FIXME: Find out how to set a specific initial height regardless of pic size
         #self.setGeometry(800, 800, 600, 600)
         self.setMaximumHeight(300)
         self.move(300, 200)
@@ -55,10 +51,7 @@ class ComicViewer(QtGui.QMainWindow):
     def showDialog(self):
         fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file', 
                 '/home')
-        '''
-		TODO: find out what open returns and hook it up to the
-		current open file system
-		'''
+        
         f = open(fname, 'r')
         
         with f:        
@@ -66,7 +59,6 @@ class ComicViewer(QtGui.QMainWindow):
         
     def showImage(self, imgData):
         self.lbl.setPixmap(imgData) 
-		#Possibly set size of window here before showing
         self.show()
     
     def openFile(self, inFile):
