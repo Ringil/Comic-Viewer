@@ -33,8 +33,8 @@ class ComicViewer(QtGui.QWidget):
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
         
-        #This makes the label clickable and calls nextPage
-        self.lbl.mouseReleaseEvent = self.changePage(1)
+        #This makes the label clickable and calls nextPage. DOESNT WORK 
+        #self.lbl.mouseReleaseEvent = self.changePage(1)
 
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
