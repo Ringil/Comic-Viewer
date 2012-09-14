@@ -3,6 +3,12 @@
 '''
 Written By: Kyle Robinson
 Comic Viewer
+
+Features to add:
+1) Bounds checking on next and previous pages
+2) Add the ability to remember last page by using sqlite
+3) Once everything else is completed go back and work on the mainwindow
+version so everything is GUI based.
 '''
 
 import sys, zipfile
