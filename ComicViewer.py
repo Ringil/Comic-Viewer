@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 '''
 Written By: Kyle Robinson
@@ -14,9 +14,11 @@ from StringIO import StringIO
 class ComicViewer(QtGui.QWidget):
     def __init__(self, inFile):
         super(ComicViewer, self).__init__()
-        self.initUI()
+        self.currentPage = 0
         self.openFile(inFile)
-        self.showImage(self.encodeImg())
+        self.initUI()
+        self.showImage(self.createPixmap(self.currentPage))
+        
         
     def initUI(self): 
         hbox = QtGui.QHBoxLayout(self)
@@ -24,6 +26,9 @@ class ComicViewer(QtGui.QWidget):
 
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
+        
+        #This makes the label clickable and calls nextPage
+        self.lbl.mouseReleaseEvent = self.nextPage
 
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
@@ -33,16 +38,51 @@ class ComicViewer(QtGui.QWidget):
         hbox.addWidget(scrollArea)
         
         self.setLayout(hbox)
-        self.setGeometry(800, 800, 600, 600)
+        self.setGeometry(1800, 1800,1800, 1800)
         self.move(300, 200)
         self.setWindowTitle('Comic Viewer')
         self.show() 
+    
+    def keyPressEvent(self, e):
         
-    def showImage(self, imgData):
-        self.lbl.setPixmap(imgData) 
+        if e.key() == QtCore.Qt.Key_Space or e.key() == QtCore.Qt.Key_Return:
+            self.nextPage(e)
+            
+        if e.key() == QtCore.Qt.Key_Backspace:
+            self.lastPage(e)
+            
+    def nextPage(self, event):
+        '''
+        Bring up the next page in the comic
+        
+        WARNING: This does NOT check if you're trying 
+            to go past the last page
+        '''
+        self.currentPage = self.currentPage + 1
+        self.showImage(self.createPixmap(self.currentPage))
+        
+    def lastPage(self, event):
+        '''
+        Bring up the last page in the comic
+        
+        WARNING: This does NOT check if you're trying 
+            to go past the first page
+        '''
+        self.currentPage = self.currentPage - 1
+        self.showImage(self.createPixmap(self.currentPage))
+        
+    def showImage(self, pixmap):
+        '''
+        Sets the label to the pixmap (Qt container meant
+        for displaying images) provided.
+        '''
+        self.lbl.setPixmap(pixmap) 
         self.show()
     
     def openFile(self, inFile):
+        '''
+        Open a file stream to either a rar/cbr or zip/cbz file
+        '''
         if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
             self.z = zipfile.ZipFile(inFile, "r")    
         elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
@@ -51,11 +91,13 @@ class ComicViewer(QtGui.QWidget):
             print "Unknown Comic Archive Type"
             sys.exit(1)
         
-    def encodeImg(self):
+    def createPixmap(self, pageNum):
         '''
-        Returns a QPixmap of the first image in an archive
+        Returns a Pixmap of the image file in the archive
+        where pageNum corresponds to the position in archive
+        starting at 0.
         '''
-        data = self.z.read(self.z.namelist()[0])
+        data = self.z.read(self.z.namelist()[pageNum])
         enc = StringIO(data) 
         img = Image.open(enc)
         data = img.convert("RGBA").tostring("raw", "BGRA")
@@ -70,7 +112,7 @@ if __name__ == '__main__':
             raise ValueError, "No image filename specified"
     except Exception, e:
         print >> sys.stderr, e
-        print "USAGE: ./ComicViewer.py <comic filename>"
+        print "USAGE: ./ComicViewer.py <comic filename>\n\nOR\n\n../ComicViewer.py help"
         sys.exit(1)
             
     inFile = sys.argv[1]	
