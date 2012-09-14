@@ -52,11 +52,12 @@ class ComicViewer(QtGui.QWidget):
     def keyPressEvent(self, e):
         nextPage = 1
         lastPage = -1
+        maxPages = self.getMaxPages()
 
-        if e.key() == QtCore.Qt.Key_Space or e.key() == QtCore.Qt.Key_Return:
+        if e.key() == QtCore.Qt.Key_Space or e.key() == QtCore.Qt.Key_Return and (self.currentPage + nextPage <= maxPages - 1):
             self.changePage(e, nextPage)
             
-        if e.key() == QtCore.Qt.Key_Backspace:
+        if e.key() == QtCore.Qt.Key_Backspace and (self.currentPage + lastPage >= 0):
             self.changePage(e, lastPage)
       
     '''
@@ -91,7 +92,18 @@ class ComicViewer(QtGui.QWidget):
         else:
             print "Unknown Comic Archive Type"
             sys.exit(1)
-        
+
+    def getMaxPages(self):
+        '''
+        Gotta be a better way than this
+        '''
+        counter = 0
+
+        for count in self.z.namelist():
+            counter = counter + 1 
+
+        return counter
+            
     def createPixmap(self, pageNum):
         '''
         Returns a Pixmap of the image file in the archive
