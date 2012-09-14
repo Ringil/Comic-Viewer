@@ -5,7 +5,7 @@ Written By: Kyle Robinson
 Comic Viewer
 
 Features to add:
-1) Bounds checking on next and previous pages
+1) Fix clicking on image
 2) Add the ability to remember last page by using sqlite
 3) Once everything else is completed go back and work on the mainwindow
 version so everything is GUI based.
@@ -34,7 +34,7 @@ class ComicViewer(QtGui.QWidget):
         self.lbl.setPixmap(pixmap)
         
         #This makes the label clickable and calls nextPage
-        #self.lbl.mouseReleaseEvent = self.changePage(e, 1)
+        self.lbl.mouseReleaseEvent = self.changePage(1)
 
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
@@ -55,16 +55,16 @@ class ComicViewer(QtGui.QWidget):
         maxPages = self.getMaxPages()
 
         if e.key() == QtCore.Qt.Key_Space or e.key() == QtCore.Qt.Key_Return and (self.currentPage + nextPage <= maxPages - 1):
-            self.changePage(e, nextPage)
+            self.changePage(nextPage)
             
         if e.key() == QtCore.Qt.Key_Backspace and (self.currentPage + lastPage >= 0):
-            self.changePage(e, lastPage)
+            self.changePage(lastPage)
       
     '''
     Change the nextpage previous page to 1 func that takes a +1 or -1.
     Will allow for a large page step func later
     '''      
-    def changePage(self, event, nextOrPrev):
+    def changePage(self, nextOrPrev):
         '''
         Bring up the next or previous page in the comic archive
         
