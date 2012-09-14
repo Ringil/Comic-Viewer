@@ -13,6 +13,6 @@ Currently when going back and forth through pages you won't run into any errors 
 #Hotkeys
 Good News! Although the interface is just a label currently, you can now actually go back and forth through the pages by using a few hotkeys. 
 
-Next Page: Spacebar or Enter or Click on the current page/image
+Next Page: Spacebar or Enter
 
 Previous Page: Backspace
