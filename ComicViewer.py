@@ -34,7 +34,7 @@ class ComicViewer(QtGui.QWidget):
         self.lbl.setPixmap(pixmap)
         
         #This makes the label clickable and calls nextPage
-        self.lbl.mouseReleaseEvent = self.nextPage
+        #self.lbl.mouseReleaseEvent = self.changePage(e, 1)
 
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
@@ -50,31 +50,26 @@ class ComicViewer(QtGui.QWidget):
         self.show() 
     
     def keyPressEvent(self, e):
-        
+        nextPage = 1
+        lastPage = -1
+
         if e.key() == QtCore.Qt.Key_Space or e.key() == QtCore.Qt.Key_Return:
-            self.nextPage(e)
+            self.changePage(e, nextPage)
             
         if e.key() == QtCore.Qt.Key_Backspace:
-            self.lastPage(e)
-            
-    def nextPage(self, event):
+            self.changePage(e, lastPage)
+      
+    '''
+    Change the nextpage previous page to 1 func that takes a +1 or -1.
+    Will allow for a large page step func later
+    '''      
+    def changePage(self, event, nextOrPrev):
         '''
-        Bring up the next page in the comic
+        Bring up the next or previous page in the comic archive
         
-        WARNING: This does NOT check if you're trying 
-            to go past the last page
+        WARNING: This does NO BOUNDS CHECKING
         '''
-        self.currentPage = self.currentPage + 1
-        self.showImage(self.createPixmap(self.currentPage))
-        
-    def lastPage(self, event):
-        '''
-        Bring up the last page in the comic
-        
-        WARNING: This does NOT check if you're trying 
-            to go past the first page
-        '''
-        self.currentPage = self.currentPage - 1
+        self.currentPage = self.currentPage + nextOrPrev
         self.showImage(self.createPixmap(self.currentPage))
         
     def showImage(self, pixmap):
