@@ -112,7 +112,7 @@ if __name__ == '__main__':
             raise ValueError, "No image filename specified"
     except Exception, e:
         print >> sys.stderr, e
-        print "USAGE: ./ComicViewer.py <comic filename>\n\nOR\n\n../ComicViewer.py help"
+        print "USAGE: ./ComicViewer.py <path to your comic file>"
         sys.exit(1)
             
     inFile = sys.argv[1]	
