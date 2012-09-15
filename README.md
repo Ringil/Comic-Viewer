@@ -12,6 +12,6 @@ In this case you would use ./ComicViewer axe.cbz
 #Hotkeys
 Good News! Although the interface is just a label currently, you can now actually go back and forth through the pages by using a few hotkeys. 
 
-Next Page: Spacebar or Enter
+Next Page: Spacebar or Enter or Left-Click on the Image
 
 Previous Page: Backspace
