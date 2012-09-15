@@ -5,9 +5,8 @@ Written By: Kyle Robinson
 Comic Viewer
 
 Features to add:
-1) Fix clicking on image
-2) Add the ability to remember last page by using sqlite
-3) Once everything else is completed go back and work on the mainwindow
+1) Add the ability to remember last page by using sqlite
+2) Once everything else is completed go back and work on the mainwindow
 version so everything is GUI based.
 '''
 
@@ -17,10 +16,30 @@ from PIL import Image
 from PyQt4 import QtGui, QtCore
 from StringIO import StringIO
 
+
+'''
+Code from pyqt wiki to make unclickable objects clickable
+'''
+def clickable(widget):
+    class Filter(QtCore.QObject):     
+
+        clicked = QtCore.pyqtSignal()
+
+        def eventFilter(self, obj, event):
+            
+            if obj == widget:
+                if event.type() == QtCore.QEvent.MouseButtonRelease:
+                    self.clicked.emit()
+                    return True
+            return False
+
+    filter = Filter(widget)
+    widget.installEventFilter(filter)
+    return filter.clicked
+
 class ComicViewer(QtGui.QWidget):
     def __init__(self, inFile):
         super(ComicViewer, self).__init__()
-        self.currentPage = 0
         self.openFile(inFile)
         self.initUI()
         self.showImage(self.createPixmap(self.currentPage))
@@ -33,8 +52,9 @@ class ComicViewer(QtGui.QWidget):
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
         
-        #This makes the label clickable and calls nextPage. DOESNT WORK 
-        #self.lbl.mouseReleaseEvent = self.changePage(1)
+        #For some reason this works but if you use changePage(1) it 
+        #has a problem saying connect needs a slot or callable
+        clickable(self.lbl).connect(self.changePage)
 
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
@@ -52,26 +72,26 @@ class ComicViewer(QtGui.QWidget):
     def keyPressEvent(self, e):
         nextPage = 1
         lastPage = -1
-        maxPages = self.getMaxPages()
 
-        if e.key() == QtCore.Qt.Key_Space or e.key() == QtCore.Qt.Key_Return and (self.currentPage + nextPage <= maxPages - 1):
+        if e.key() == QtCore.Qt.Key_Space or e.key() == QtCore.Qt.Key_Return:
             self.changePage(nextPage)
             
-        if e.key() == QtCore.Qt.Key_Backspace and (self.currentPage + lastPage >= 0):
+        if e.key() == QtCore.Qt.Key_Backspace:
             self.changePage(lastPage)
-      
-    '''
-    Change the nextpage previous page to 1 func that takes a +1 or -1.
-    Will allow for a large page step func later
-    '''      
-    def changePage(self, nextOrPrev):
+    
+    def changePage(self, nextOrPrev = 1):
         '''
         Bring up the next or previous page in the comic archive
-        
-        WARNING: This does NO BOUNDS CHECKING
         '''
-        self.currentPage = self.currentPage + nextOrPrev
-        self.showImage(self.createPixmap(self.currentPage))
+        maxPages = self.getMaxPages()
+
+        chosenPage = self.currentPage + nextOrPrev
+
+        #Do bounds checking to make sure you don't try to display a 
+        #page that doesn't exist
+        if (chosenPage <= maxPages - 1) and (chosenPage >= 0):
+            self.showImage(self.createPixmap(chosenPage))
+            self.currentPage = chosenPage
         
     def showImage(self, pixmap):
         '''
@@ -85,6 +105,7 @@ class ComicViewer(QtGui.QWidget):
         '''
         Open a file stream to either a rar/cbr or zip/cbz file
         '''
+        self.currentPage = 0
         if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
             self.z = zipfile.ZipFile(inFile, "r")    
         elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
