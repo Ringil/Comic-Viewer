@@ -11,7 +11,7 @@ version so everything is GUI based.
 '''
 
 import sys, zipfile
-import rarfile
+import rarfile, Tables
 from PIL import Image
 from PyQt4 import QtGui, QtCore
 from StringIO import StringIO
@@ -27,38 +27,29 @@ class ComicViewer(QtGui.QWidget):
         self.openFile(inFile)
         self.initUI()
         self.createDB()
-        self.insertDB("test.cbz", self.currentPage)
+        #self.insertDB("test.cbz", self.currentPage)
         self.showImage(self.createPixmap(self.currentPage))
        
 
     def createDB(self):
         #Might have to make db a global var dont know yet
         self.engine = create_engine('sqlite:///bookmarks.db', echo = False)
+        
         Base = declarative_base()
         
-        class Bookmark(Base):
-            __tablename__ = "bookmarks"
-            id = Column(Integer, primary_key=True)
-            fileName = Column(String(100))
-            pageNume = Column(Integer)
-
-            def __init__(self, fileName, pageNum):
-                self.fileName = fileName
-                self.pageNum = pageNum
-        
         Base.metadata.create_all(self.engine)
-
+    
     def insertDB(self, fileName, pageNum):
         #create a Session
         Session = sessionmaker(bind=self.engine)
         session = Session()
-
+    
         #create new bookmarks
-        newBookmark = Bookmark(fileName, pageNum)
+        newBookmark = Tables.Bookmark(fileName, pageNum)
         session.add(newBookmark)
+    
         session.commit()
-                
-        
+    
     def initUI(self): 
         hbox = QtGui.QHBoxLayout(self)
         pixmap = QtGui.QPixmap()
