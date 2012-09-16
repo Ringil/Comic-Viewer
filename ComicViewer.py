@@ -11,44 +11,19 @@ version so everything is GUI based.
 '''
 
 import sys, zipfile
-import rarfile, Tables
+import rarfile, Utility
 from PIL import Image
 from PyQt4 import QtGui, QtCore
 from StringIO import StringIO
-
-from sqlalchemy import *
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import *
-
 
 class ComicViewer(QtGui.QWidget):
     def __init__(self, inFile):
         super(ComicViewer, self).__init__()
         self.openFile(inFile)
         self.initUI()
-        self.createDB()
+        #self.createDB()
         #self.insertDB("test.cbz", self.currentPage)
         self.showImage(self.createPixmap(self.currentPage))
-       
-
-    def createDB(self):
-        #Might have to make db a global var dont know yet
-        self.engine = create_engine('sqlite:///bookmarks.db', echo = False)
-        
-        Base = declarative_base()
-        
-        Base.metadata.create_all(self.engine)
-    
-    def insertDB(self, fileName, pageNum):
-        #create a Session
-        Session = sessionmaker(bind=self.engine)
-        session = Session()
-    
-        #create new bookmarks
-        newBookmark = Tables.Bookmark(fileName, pageNum)
-        session.add(newBookmark)
-    
-        session.commit()
     
     def initUI(self): 
         hbox = QtGui.QHBoxLayout(self)
@@ -59,7 +34,7 @@ class ComicViewer(QtGui.QWidget):
         
         #For some reason this works but if you use changePage(1) it 
         #has a problem saying connect needs a slot or callable
-        clickable(self.lbl).connect(self.changePage)
+        Utility.clickable(self.lbl).connect(self.changePage)
 
         #Create a scrollbar for the label
         scrollArea = QtGui.QScrollArea(self)
@@ -89,7 +64,7 @@ class ComicViewer(QtGui.QWidget):
         '''
         Bring up the next or previous page in the comic archive
         '''
-        maxPages = self.getMaxPages()
+        maxPages = self.getNumPages()
 
         chosenPage = self.currentPage + nextOrPrev
 
@@ -120,16 +95,11 @@ class ComicViewer(QtGui.QWidget):
             print "Unknown Comic Archive Type"
             sys.exit(1)
 
-    def getMaxPages(self):
+    def getNumPages(self):
         '''
-        Gotta be a better way than this
-        '''
-        counter = 0
-
-        for count in self.z.namelist():
-            counter = counter + 1 
-
-        return counter
+        Length of the current open comic book in pages
+        ''' 
+        return len(self.z.namelist())
             
     def createPixmap(self, pageNum):
         '''
@@ -145,26 +115,6 @@ class ComicViewer(QtGui.QWidget):
         pix = QtGui.QPixmap.fromImage(qimg)
     
         return pix
-
-'''
-Code from pyqt wiki to make unclickable objects clickable
-'''
-def clickable(widget):
-    class Filter(QtCore.QObject):     
-
-        clicked = QtCore.pyqtSignal()
-
-        def eventFilter(self, obj, event):
-            
-            if obj == widget:
-                if event.type() == QtCore.QEvent.MouseButtonRelease:
-                    self.clicked.emit()
-                    return True
-            return False
-
-    filter = Filter(widget)
-    widget.installEventFilter(filter)
-    return filter.clicked
         
 if __name__ == '__main__':
     try:
