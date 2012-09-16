@@ -16,34 +16,48 @@ from PIL import Image
 from PyQt4 import QtGui, QtCore
 from StringIO import StringIO
 
+from sqlalchemy import *
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import *
 
-'''
-Code from pyqt wiki to make unclickable objects clickable
-'''
-def clickable(widget):
-    class Filter(QtCore.QObject):     
-
-        clicked = QtCore.pyqtSignal()
-
-        def eventFilter(self, obj, event):
-            
-            if obj == widget:
-                if event.type() == QtCore.QEvent.MouseButtonRelease:
-                    self.clicked.emit()
-                    return True
-            return False
-
-    filter = Filter(widget)
-    widget.installEventFilter(filter)
-    return filter.clicked
 
 class ComicViewer(QtGui.QWidget):
     def __init__(self, inFile):
         super(ComicViewer, self).__init__()
         self.openFile(inFile)
         self.initUI()
+        self.createDB()
+        self.insertDB("test.cbz", self.currentPage)
         self.showImage(self.createPixmap(self.currentPage))
+       
+
+    def createDB(self):
+        #Might have to make db a global var dont know yet
+        self.engine = create_engine('sqlite:///bookmarks.db', echo = False)
+        Base = declarative_base()
         
+        class Bookmark(Base):
+            __tablename__ = "bookmarks"
+            id = Column(Integer, primary_key=True)
+            fileName = Column(String(100))
+            pageNume = Column(Integer)
+
+            def __init__(self, fileName, pageNum):
+                self.fileName = fileName
+                self.pageNum = pageNum
+        
+        Base.metadata.create_all(self.engine)
+
+    def insertDB(self, fileName, pageNum):
+        #create a Session
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+
+        #create new bookmarks
+        newBookmark = Bookmark(fileName, pageNum)
+        session.add(newBookmark)
+        session.commit()
+                
         
     def initUI(self): 
         hbox = QtGui.QHBoxLayout(self)
@@ -56,6 +70,7 @@ class ComicViewer(QtGui.QWidget):
         #has a problem saying connect needs a slot or callable
         clickable(self.lbl).connect(self.changePage)
 
+        #Create a scrollbar for the label
         scrollArea = QtGui.QScrollArea(self)
         scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
         scrollArea.setWidget(self.lbl)
@@ -139,6 +154,26 @@ class ComicViewer(QtGui.QWidget):
         pix = QtGui.QPixmap.fromImage(qimg)
     
         return pix
+
+'''
+Code from pyqt wiki to make unclickable objects clickable
+'''
+def clickable(widget):
+    class Filter(QtCore.QObject):     
+
+        clicked = QtCore.pyqtSignal()
+
+        def eventFilter(self, obj, event):
+            
+            if obj == widget:
+                if event.type() == QtCore.QEvent.MouseButtonRelease:
+                    self.clicked.emit()
+                    return True
+            return False
+
+    filter = Filter(widget)
+    widget.installEventFilter(filter)
+    return filter.clicked
         
 if __name__ == '__main__':
     try:
