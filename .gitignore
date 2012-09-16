@@ -2,3 +2,5 @@ test.cbz
 *.pyproj
 *.sln*
 *.suo*
+*.pyc
+*.db
