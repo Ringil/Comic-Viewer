@@ -45,10 +45,22 @@ class ComicViewer(QtGui.QWidget):
         hbox.addWidget(scrollArea)
         
         self.setLayout(hbox)
-        self.setGeometry(1800, 1800,1800, 1800)
-        self.move(300, 200)
+
+        #Find the resolution of the screen
+        height = QtGui.QDesktopWidget().availableGeometry().height()
+        width = QtGui.QDesktopWidget().availableGeometry().width()
+        self.resize(width, height) #Set the window to native resolution
+
+        #self.center()
         self.setWindowTitle('Comic Viewer')
-        self.show() 
+        self.show()
+
+    def center(self):
+        #Can use this if user doesn't want the screen to be filled at start
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
     
     def keyPressEvent(self, e):
         nextPage = 1
