@@ -122,6 +122,14 @@ class ComicViewer(QtGui.QWidget):
         data = self.z.read(self.z.namelist()[pageNum])
         enc = StringIO(data) 
         img = Image.open(enc)
+
+        '''
+        this is where it was breaking down before with other
+        comic files I believe. Figured out how to check the
+        img files mode which i think will help with converting to
+        QImage.
+        '''
+        print img.mode, img.size
         data = img.convert("RGBA").tostring("raw", "BGRA")
         qimg = QtGui.QImage(data, img.size[0], img.size[1], QtGui.QImage.Format_ARGB32)
         pix = QtGui.QPixmap.fromImage(qimg)
