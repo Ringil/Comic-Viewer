@@ -104,7 +104,7 @@ class ComicViewer(QtGui.QWidget):
         elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
             self.z = rarfile.RarFile(inFile, "r")
         else:
-            print "Unknown Comic Archive Type"
+            print("Unknown Comic Archive Type")
             sys.exit(1)
 
     def getNumPages(self):
@@ -139,10 +139,10 @@ class ComicViewer(QtGui.QWidget):
 if __name__ == '__main__':
     try:
         if len(sys.argv) == 1:
-            raise ValueError, "No image filename specified"
-    except Exception, e:
+            raise ValueError("No image filename specified")
+    except Exception(e):
         print >> sys.stderr, e
-        print "USAGE: ./ComicViewer.py <path to your comic file>"
+        print("USAGE: ./ComicViewer.py <path to your comic file>")
         sys.exit(1)
             
     inFile = sys.argv[1]	
