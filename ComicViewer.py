@@ -12,7 +12,6 @@ version so everything is GUI based.
 
 import sys, zipfile, rarfile
 import Utility
-from PIL import Image
 from PySide import QtGui, QtCore
 from StringIO import StringIO
 
