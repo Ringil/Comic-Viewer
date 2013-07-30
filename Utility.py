@@ -1,4 +1,4 @@
-from PyQt4 import QtCore
+from PySide import QtCore
 
 '''
 Code from pyqt wiki to make unclickable objects clickable
@@ -6,7 +6,7 @@ Code from pyqt wiki to make unclickable objects clickable
 def clickable(widget):
     class Filter(QtCore.QObject):     
 
-        clicked = QtCore.pyqtSignal()
+        clicked = QtCore.Signal()
 
         def eventFilter(self, obj, event):
             

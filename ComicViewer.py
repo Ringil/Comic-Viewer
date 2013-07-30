@@ -10,10 +10,10 @@ Features to add:
 version so everything is GUI based.
 '''
 
-import sys, zipfile
-import rarfile, Utility
+import sys, zipfile, rarfile
+import Utility
 from PIL import Image
-from PyQt4 import QtGui, QtCore
+from PySide import QtGui, QtCore
 from StringIO import StringIO
 
 class ComicViewer(QtGui.QWidget):
@@ -32,8 +32,6 @@ class ComicViewer(QtGui.QWidget):
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
         
-        #For some reason this works but if you use changePage(1) it 
-        #has a problem saying connect needs a slot or callable
         Utility.clickable(self.lbl).connect(self.changePage)
 
         #Create a scrollbar for the label
@@ -51,7 +49,7 @@ class ComicViewer(QtGui.QWidget):
         width = QtGui.QDesktopWidget().availableGeometry().width()
         self.resize(width, height) #Set the window to native resolution
 
-        #self.center()
+        self.center()
         self.setWindowTitle('Comic Viewer')
         self.show()
 
@@ -120,18 +118,7 @@ class ComicViewer(QtGui.QWidget):
         starting at 0.
         '''
         data = self.z.read(self.z.namelist()[pageNum])
-        enc = StringIO(data) 
-        img = Image.open(enc)
-
-        '''
-        this is where it was breaking down before with other
-        comic files I believe. Figured out how to check the
-        img files mode which i think will help with converting to
-        QImage.
-        '''
-        print img.mode, img.size
-        data = img.convert("RGBA").tostring("raw", "BGRA")
-        qimg = QtGui.QImage(data, img.size[0], img.size[1], QtGui.QImage.Format_ARGB32)
+        qimg = QtGui.QImage.fromData(data)
         pix = QtGui.QPixmap.fromImage(qimg)
     
         return pix
