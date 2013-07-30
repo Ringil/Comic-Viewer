@@ -99,8 +99,8 @@ class ComicViewer(QtGui.QWidget):
         self.currentPage = 0
         if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
             self.z = zipfile.ZipFile(inFile, "r")    
-        elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
-            self.z = rarfile.RarFile(inFile, "r")
+        # elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
+        #     self.z = rarfile.RarFile(inFile, "r")
         else:
             print("Unknown Comic Archive Type")
             sys.exit(1)
