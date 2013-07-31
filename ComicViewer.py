@@ -28,15 +28,9 @@ class ComicViewer(QtGui.QMainWindow):
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
         
-        #Create open file menu for selecting comics to open
-        openFile = QtGui.QAction(QtGui.QIcon('open.png'), 'Open', self)
-        openFile.setShortcut('Ctrl+O')
-        openFile.triggered.connect(self.openFile)
+        self.createActions()
 
-        #Create the menubar
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(openFile)
+        self.createMenu()        
         
         #Make the label clickable to go forward pages
         Utility.clickable(self.lbl).connect(self.changePage)
@@ -56,6 +50,43 @@ class ComicViewer(QtGui.QMainWindow):
         self.center()
         self.setWindowTitle('Comic Viewer')
         self.show()
+
+    def createMenu(self):
+        self.fileMenu = QtGui.QMenu("&File", self)
+        self.fileMenu.addAction(self.openAct)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction(self.closeAct)
+
+        self.menuBar().addMenu(self.fileMenu)
+
+    def createActions(self):
+        self.openAct = QtGui.QAction('Open', self, shortcut='Ctrl+O',
+            triggered=self.openFile)
+
+        #Don't now if this is actually working or not (not showing up in file menu)
+        self.closeAct = QtGui.QAction("&Quit", self, shortcut='Ctrl+Q',
+            triggered = self.close)
+
+    def close(self):
+        sys.exit(1)
+
+    def openFile(self):
+        '''
+        Open a file stream to either a rar/cbr or zip/cbz file
+        '''
+        inFile, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
+                    '/home')
+
+        self.currentPage = 0
+        if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
+            self.z = zipfile.ZipFile(inFile, "r")    
+        elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
+            self.z = rarfile.RarFile(inFile)
+        else:
+            print("Unknown Comic Archive Type")
+            sys.exit(1)
+
+        self.showImage(self.createPixmap(self.currentPage))
 
     def center(self):
         #Can use this if user doesn't want the screen to be filled at start
@@ -95,25 +126,6 @@ class ComicViewer(QtGui.QMainWindow):
         '''
         self.lbl.setPixmap(pixmap) 
         self.show()
-    
-    def openFile(self):
-        '''
-        Open a file stream to either a rar/cbr or zip/cbz file
-        '''
-        inFile, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
-                    '/home')
-
-        self.currentPage = 0
-        if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
-            self.z = zipfile.ZipFile(inFile, "r")    
-        elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
-            self.z = rarfile.RarFile(inFile)
-        else:
-            print("Unknown Comic Archive Type")
-            sys.exit(1)
-
-        self.showImage(self.createPixmap(self.currentPage)) #Probably change how this works later
-
 
     def getNumPages(self):
         '''
@@ -134,15 +146,6 @@ class ComicViewer(QtGui.QMainWindow):
         return pix
         
 if __name__ == '__main__':
-    # try:
-    #     if len(sys.argv) == 1:
-    #         raise ValueError("No image filename specified")
-    # except Exception(e):
-    #     print >> sys.stderr, e
-    #     print("USAGE: ./ComicViewer.py <path to your comic file>")
-    #     sys.exit(1)
-            
-    # inFile = sys.argv[1]	
     app = QtGui.QApplication(sys.argv)
     ex = ComicViewer()
     sys.exit(app.exec_())
