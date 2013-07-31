@@ -29,8 +29,8 @@ class ComicViewer(QtGui.QMainWindow):
         #Create a label to show the pixmap (comic)
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
-        self.lbl.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
-        self.lbl.setScaledContents(True)
+        #self.lbl.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+        #self.lbl.setScaledContents(True)
 
         #Create open file menu for selecting comics to open
         openFile = QtGui.QAction(QtGui.QIcon('open.png'), 'Open', self)
