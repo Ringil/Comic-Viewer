@@ -1,6 +1,6 @@
 ##Comic Viewer
 A, work in progress, python .cbr and .cbz reader.
-Currently requires Qt 4.8, PySide, Python 2.7, and rarfile.
+Currently requires Qt 4.8, PySide, Python 2.7, unrar and rarfile.
 
 #Getting Started
 Once the previous requirements are met you simply type in the console:
@@ -12,6 +12,3 @@ Good News! Although the interface is just a label currently, you can now actuall
 Next Page: Spacebar or Enter or Left-Click on the Image
 
 Previous Page: Backspace
-
-#Warning
-CBR's and rar files do not work yet
