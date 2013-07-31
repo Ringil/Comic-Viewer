@@ -17,11 +17,9 @@ from PySide import QtGui, QtCore
 class ComicViewer(QtGui.QMainWindow):
     def __init__(self):
         super(ComicViewer, self).__init__()
-        #self.openFile(inFile)
         self.initUI()
         #self.createDB()
         #self.insertDB("test.cbz", self.currentPage)
-        #self.showImage(self.createPixmap(self.currentPage))
     
     def initUI(self): 
         pixmap = QtGui.QPixmap()
@@ -29,9 +27,7 @@ class ComicViewer(QtGui.QMainWindow):
         #Create a label to show the pixmap (comic)
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
-        #self.lbl.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
-        #self.lbl.setScaledContents(True)
-
+        
         #Create open file menu for selecting comics to open
         openFile = QtGui.QAction(QtGui.QIcon('open.png'), 'Open', self)
         openFile.setShortcut('Ctrl+O')
