@@ -6,8 +6,6 @@ Comic Viewer
 
 Features to add:
 1) Add the ability to remember last page by using sqlite
-2) Once everything else is completed go back and work on the mainwindow
-version so everything is GUI based.
 '''
 
 import sys, zipfile, rarfile
@@ -27,9 +25,10 @@ class ComicViewer(QtGui.QMainWindow):
         #Create a label to show the pixmap (comic)
         self.lbl = QtGui.QLabel(self)
         self.lbl.setPixmap(pixmap)
+        self.lbl.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+        self.lbl.setScaledContents(True)
         
         self.createActions()
-
         self.createMenu()        
         
         #Make the label clickable to go forward pages
@@ -39,7 +38,6 @@ class ComicViewer(QtGui.QMainWindow):
         self.scrollArea = QtGui.QScrollArea()
         self.scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
         self.scrollArea.setWidget(self.lbl)
-        self.scrollArea.setWidgetResizable(True)
         self.setCentralWidget(self.scrollArea)
 
         #Find the resolution of the screen
@@ -51,33 +49,15 @@ class ComicViewer(QtGui.QMainWindow):
         self.setWindowTitle('Comic Viewer')
         self.show()
 
-    def createMenu(self):
-        self.fileMenu = QtGui.QMenu("&File", self)
-        self.fileMenu.addAction(self.openAct)
-        self.fileMenu.addSeparator()
-        self.fileMenu.addAction(self.closeAct)
-
-        self.menuBar().addMenu(self.fileMenu)
-
-    def createActions(self):
-        self.openAct = QtGui.QAction('Open', self, shortcut='Ctrl+O',
-            triggered=self.openFile)
-
-        #Don't now if this is actually working or not (not showing up in file menu)
-        self.closeAct = QtGui.QAction("&Quit", self, shortcut='Ctrl+Q',
-            triggered = self.close)
-
-    def close(self):
-        sys.exit(1)
-
     def openFile(self):
         '''
         Open a file stream to either a rar/cbr or zip/cbz file
         '''
         inFile, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
-                    '/home')
+                    QtCore.QDir.currentPath())
 
         self.currentPage = 0
+
         if zipfile.is_zipfile(inFile) == True:      #Check if its a zip file (.zip, .cbz)
             self.z = zipfile.ZipFile(inFile, "r")    
         elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
@@ -87,6 +67,62 @@ class ComicViewer(QtGui.QMainWindow):
             sys.exit(1)
 
         self.showImage(self.createPixmap(self.currentPage))
+
+        self.scaleFactor = 1.0
+        self.scaleImage(self.scaleFactor)
+        self.updateActions()
+
+    def createMenu(self):
+        self.fileMenu = QtGui.QMenu("&File", self)
+        self.fileMenu.addAction(self.openAct)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction(self.closeAct)
+
+        self.viewMenu = QtGui.QMenu("&View", self)
+        self.viewMenu.addAction(self.zoomInAct)
+        self.viewMenu.addAction(self.zoomOutAct)
+
+        self.menuBar().addMenu(self.fileMenu)
+        self.menuBar().addMenu(self.viewMenu)
+
+    def createActions(self):
+        self.openAct = QtGui.QAction('Open', self, shortcut='Ctrl+O',
+            triggered=self.openFile)
+
+        self.closeAct = QtGui.QAction("&Quit", self, shortcut='Ctrl+Q',
+            triggered = self.close)
+
+        self.zoomInAct = QtGui.QAction("Zoom &In (25%)", self,
+                shortcut="Ctrl++", enabled=False, triggered=self.zoomIn)
+
+        self.zoomOutAct = QtGui.QAction("Zoom &Out (25%)", self,
+                shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
+
+    def scaleImage(self, factor):
+        self.scaleFactor *= factor
+        self.lbl.resize(self.scaleFactor * self.lbl.pixmap().size())
+
+        self.adjustScrollBar(self.scrollArea.horizontalScrollBar(), factor)
+        self.adjustScrollBar(self.scrollArea.verticalScrollBar(), factor)
+
+        self.zoomInAct.setEnabled(self.scaleFactor < 5.0)
+        self.zoomOutAct.setEnabled(self.scaleFactor > 0.1)
+
+    def adjustScrollBar(self, scrollBar, factor):
+        scrollBar.setValue(int(factor * scrollBar.value() + ((factor - 1) * scrollBar.pageStep()/2)))
+
+    def zoomIn(self):
+        self.scaleImage(1.25)
+
+    def zoomOut(self):
+        self.scaleImage(0.75)
+
+    def close(self):
+        sys.exit(1)
+
+    def updateActions(self):
+        self.zoomInAct.setEnabled(True)
+        self.zoomOutAct.setEnabled(True)
 
     def center(self):
         #Can use this if user doesn't want the screen to be filled at start
@@ -125,13 +161,6 @@ class ComicViewer(QtGui.QMainWindow):
         for displaying images) provided.
         '''
         self.lbl.setPixmap(pixmap) 
-        self.show()
-
-    def getNumPages(self):
-        '''
-        Length of the current open comic book in pages
-        ''' 
-        return len(self.z.namelist())
             
     def createPixmap(self, pageNum):
         '''
@@ -144,6 +173,12 @@ class ComicViewer(QtGui.QMainWindow):
         pix = QtGui.QPixmap.fromImage(qimg)
     
         return pix
+
+    def getNumPages(self):
+        '''
+        Length of the current open comic book in pages
+        ''' 
+        return len(self.z.namelist())
         
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
