@@ -5,6 +5,8 @@
 *.db
 *.cbz
 *.cbr
+.project
+.pydevproject
 
 *.py~
 
