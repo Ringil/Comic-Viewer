@@ -1,3 +1,0 @@
-PIL
-rarfile
-pyqt4
