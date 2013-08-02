@@ -29,10 +29,7 @@ class ComicViewer(QtGui.QMainWindow):
         self.lbl.setScaledContents(True)
         
         self.createActions()
-        self.createMenu()        
-        
-        #Make the label clickable to go forward pages
-        Utility.clickable(self.lbl).connect(self.changePage)
+        self.createMenu()
 
         #Create a scrollbar for the label
         self.scrollArea = QtGui.QScrollArea()
@@ -63,10 +60,20 @@ class ComicViewer(QtGui.QMainWindow):
         elif rarfile.is_rarfile(inFile) == True:    #Check if its a rar file (.rar, .cbr)
             self.z = rarfile.RarFile(inFile)
         else:
-            print("Unknown Comic Archive Type")
-            sys.exit(1)
+            msgBox = QtGui.QMessageBox()
+            msgBox.setText("This is not a valid CBZ or CBR file!")
+            msgBox.setStandardButtons(QtGui.QMessageBox.Ok)
+            msgBox.setDefaultButton(QtGui.QMessageBox.Ok)
+            ret = msgBox.exec_()
+
+            #if statement is probably unecessary
+            if ret == QtGui.QMessageBox.Ok:
+                self.openFile()
 
         self.showImage(self.createPixmap(self.currentPage))
+
+        #Make the label clickable to go forward pages
+        Utility.clickable(self.lbl).connect(self.changePage)
 
         self.scaleFactor = 1.0
         self.scaleImage(self.scaleFactor)
@@ -93,10 +100,10 @@ class ComicViewer(QtGui.QMainWindow):
             triggered = self.close)
 
         self.zoomInAct = QtGui.QAction("Zoom &In (25%)", self,
-                shortcut="Ctrl++", enabled=False, triggered=self.zoomIn)
+            shortcut="Ctrl++", enabled=False, triggered=self.zoomIn)
 
         self.zoomOutAct = QtGui.QAction("Zoom &Out (25%)", self,
-                shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
+            shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
 
     def scaleImage(self, factor):
         self.scaleFactor *= factor
@@ -109,13 +116,14 @@ class ComicViewer(QtGui.QMainWindow):
         self.zoomOutAct.setEnabled(self.scaleFactor > 0.1)
 
     def adjustScrollBar(self, scrollBar, factor):
-        scrollBar.setValue(int(factor * scrollBar.value() + ((factor - 1) * scrollBar.pageStep()/2)))
+        scrollBar.setValue(int(factor * scrollBar.value() 
+            + ((factor - 1) * scrollBar.pageStep()/2)))
 
     def zoomIn(self):
         self.scaleImage(1.25)
 
     def zoomOut(self):
-        self.scaleImage(0.75)
+        self.scaleImage(0.8)
 
     def close(self):
         sys.exit(1)
