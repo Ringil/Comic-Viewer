@@ -14,3 +14,7 @@ setup.py
 *.py~
 
 *.md~
+
+setup.py
+
+.DS_Store
