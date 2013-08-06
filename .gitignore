@@ -7,6 +7,9 @@
 *.cbr
 .project
 .pydevproject
+build
+dist
+setup.py
 
 *.py~
 

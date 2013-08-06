@@ -70,7 +70,7 @@ class ComicViewer(QtGui.QMainWindow):
             if ret == QtGui.QMessageBox.Ok:
                 self.openFile()
 
-        self.showImage(self.createPixmap(self.currentPage))
+        self.showImage(self.currentPage)
 
         #Make the label clickable to go forward pages
         Utility.clickable(self.lbl).connect(self.changePage)
@@ -160,27 +160,18 @@ class ComicViewer(QtGui.QMainWindow):
         #Do bounds checking to make sure you don't try to display a 
         #page that doesn't exist
         if (chosenPage <= maxPages - 1) and (chosenPage >= 0):
-            self.showImage(self.createPixmap(chosenPage))
+            self.showImage(chosenPage)
             self.currentPage = chosenPage
         
-    def showImage(self, pixmap):
+    def showImage(self, pageNum):
         '''
-        Sets the label to the pixmap (Qt container meant
-        for displaying images) provided.
-        '''
-        self.lbl.setPixmap(pixmap) 
-            
-    def createPixmap(self, pageNum):
-        '''
-        Returns a Pixmap of the image file in the archive
-        where pageNum corresponds to the position in archive
-        starting at 0.
+        Creates and sets the label to the pixmap (Qt container meant
+        for displaying images).
         '''
         data = self.z.read(self.z.namelist()[pageNum])
         qimg = QtGui.QImage.fromData(data)
-        pix = QtGui.QPixmap.fromImage(qimg)
-    
-        return pix
+        pixmap = QtGui.QPixmap.fromImage(qimg)
+        self.lbl.setPixmap(pixmap) 
 
     def getNumPages(self):
         '''
