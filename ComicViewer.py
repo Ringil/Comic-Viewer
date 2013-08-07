@@ -88,6 +88,7 @@ class ComicViewer(QtGui.QMainWindow):
         self.viewMenu = QtGui.QMenu("&View", self)
         self.viewMenu.addAction(self.zoomInAct)
         self.viewMenu.addAction(self.zoomOutAct)
+        self.viewMenu.addAction(self.fitToWidthAct)
 
         self.menuBar().addMenu(self.fileMenu)
         self.menuBar().addMenu(self.viewMenu)
@@ -105,6 +106,12 @@ class ComicViewer(QtGui.QMainWindow):
         self.zoomOutAct = QtGui.QAction("Zoom &Out (25%)", self,
             shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
 
+        self.zoomOutAct = QtGui.QAction("Zoom &Out (25%)", self,
+            shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
+
+        self.fitToWidthAct = QtGui.QAction("Fit To Width", self,
+            shortcut="Ctrl+w", enabled=False, triggered=self.fitToWidth)
+
     def scaleImage(self, factor):
         self.scaleFactor *= factor
         self.lbl.resize(self.scaleFactor * self.lbl.pixmap().size())
@@ -119,6 +126,14 @@ class ComicViewer(QtGui.QMainWindow):
         scrollBar.setValue(int(factor * scrollBar.value() 
             + ((factor - 1) * scrollBar.pageStep()/2)))
 
+    def fitToWidth(self):
+        #There's a bug if the next page is a diff size than the current one
+        viewWidth = self.scrollArea.viewport().width()
+        pixWidth = self.lbl.width()
+        widthScale = (viewWidth/1.0)/pixWidth #Have to div by 1.0 to get floating point div
+
+        self.scaleImage(widthScale)
+
     def zoomIn(self):
         self.scaleImage(1.25)
 
@@ -131,6 +146,7 @@ class ComicViewer(QtGui.QMainWindow):
     def updateActions(self):
         self.zoomInAct.setEnabled(True)
         self.zoomOutAct.setEnabled(True)
+        self.fitToWidthAct.setEnabled(True)
 
     def center(self):
         #Can use this if user doesn't want the screen to be filled at start
@@ -170,8 +186,8 @@ class ComicViewer(QtGui.QMainWindow):
         '''
         data = self.z.read(self.z.namelist()[pageNum])
         qimg = QtGui.QImage.fromData(data)
-        pixmap = QtGui.QPixmap.fromImage(qimg)
-        self.lbl.setPixmap(pixmap) 
+        self.pixmap = QtGui.QPixmap.fromImage(qimg)
+        self.lbl.setPixmap(self.pixmap) 
 
     def getNumPages(self):
         '''
