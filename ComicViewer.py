@@ -106,9 +106,6 @@ class ComicViewer(QtGui.QMainWindow):
         self.zoomOutAct = QtGui.QAction("Zoom &Out (25%)", self,
             shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
 
-        self.zoomOutAct = QtGui.QAction("Zoom &Out (25%)", self,
-            shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
-
         self.fitToWidthAct = QtGui.QAction("Fit To Width", self,
             shortcut="Ctrl+w", enabled=False, triggered=self.fitToWidth)
 
@@ -188,6 +185,8 @@ class ComicViewer(QtGui.QMainWindow):
         qimg = QtGui.QImage.fromData(data)
         self.pixmap = QtGui.QPixmap.fromImage(qimg)
         self.lbl.setPixmap(self.pixmap) 
+
+        #self.fitToWidth()
 
     def getNumPages(self):
         '''
