@@ -126,7 +126,7 @@ class ComicViewer(QtGui.QMainWindow):
     def fitToWidth(self):
         #There's a bug if the next page is a diff size than the current one
         viewWidth = self.scrollArea.viewport().width()
-        pixWidth = self.lbl.width()
+        pixWidth = self.lbl.width() #bug definitely is here already tried adding .pixmap()
         widthScale = (viewWidth/1.0)/pixWidth #Have to div by 1.0 to get floating point div
 
         self.scaleImage(widthScale)
