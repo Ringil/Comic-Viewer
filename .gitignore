@@ -5,6 +5,7 @@
 *.db
 *.cbz
 *.cbr
+.idea*
 .project
 .pydevproject
 build
